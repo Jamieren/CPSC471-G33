@@ -4,7 +4,7 @@ import streamlit as st
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "Fishies_2002",
+    password = "fake",
     database = "TPMS"
 )
 
