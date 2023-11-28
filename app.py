@@ -19,7 +19,7 @@ def main():
     if option == "Create User":
         st.header("Create a User", divider="blue")
         username = st.text_input("Enter your username")
-        password = st.text_input("Enter your password")
+        password = st.text_input("Enter your password", type="password")
         email = st.text_input("Enter your email")
         user_type = st.radio("Select user type",("Therapist", "Patient"))
 
