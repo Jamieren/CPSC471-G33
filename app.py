@@ -1,5 +1,6 @@
 import mysql.connector
 import streamlit as st
+import datetime
 
 mydb = mysql.connector.connect(
     host = "localhost",
@@ -15,7 +16,7 @@ def main():
     
     st.title("Therapist Patient Matching System")
 
-    option = st.sidebar.selectbox("Menu",("Create User", "Test2"))
+    option = st.sidebar.selectbox("Menu",("Create User","Create a Session", "Test2"))
 
     if option == "Create User":
         st.header("Create a User", divider="blue")
@@ -63,6 +64,85 @@ def main():
                 mycursor.execute(sql_p, val_p)
                 mydb.commit()
                 st.success("Patient user created successfully!", icon = "😄")
+                
+    if option == "Create a Session":
+        create_session()
 
 if __name__ == "__main__":
     main()
+    
+def create_session():
+    st.subheader("Create a New Session")
+    
+    # Assuming PatientID is known and set, otherwise you would get it from the current session or a login system
+    # patient_id = get_patient_id_from_login_session()
+    # For demonstration purposes, we'll use a static value
+    patient_id = st.text_input("Enter your Patient ID")
+
+    if patient_id:
+        # Query to get specializations from the Physician table.
+        mycursor.execute("SELECT Specialization FROM Physician GROUP BY Specialization")
+        # Fetch specializations and extract the specialization values from the tuples
+        specializations = [specialization for (specialization,) in mycursor.fetchall()]
+        selected_specialization = st.selectbox("Select Specialization", specializations)
+
+        if selected_specialization:
+            # Query the database for physicians with the selected specialization.
+            mycursor.execute(
+                """
+                SELECT PhysicianID, CONCAT(FirstName, ' ', LastName, ' - ', Specialization) AS PhysicianName
+                FROM Physician
+                WHERE Specialization = %s
+                """, (selected_specialization,)
+            )
+            physicians = mycursor.fetchall()
+            physician_choices = {name: pid for pid, name in physicians}
+            selected_physician_name = st.selectbox("Select Physician", options=list(physician_choices.keys()))
+
+            if selected_physician_name:
+                physician_id = physician_choices[selected_physician_name]
+
+                # Query the database for the selected physician's available times.
+                # Assuming the Availability column is a boolean indicating if the physician is available for a new appointment.
+                mycursor.execute(
+                    """
+                    SELECT Availability FROM Physician
+                    WHERE PhysicianID = %s AND Availability = 1
+                    """, (physician_id,)
+                )
+                availability = mycursor.fetchone()[0]
+                
+                if availability:
+                    selected_time = st.time_input("Select Time for Appointment")
+
+                    if st.button("Book Session"):
+                        # Assume the session date is today, you might want to let the patient choose a date.
+                        session_date = datetime.now().date()
+                        session_datetime = datetime.combine(session_date, selected_time)
+
+                        # Insert the new appointment into the Schedules table.
+                        sql_insert_appointment = """
+                            INSERT INTO Schedules (PhysicianID, Date, Time)
+                            VALUES (%s, %s, %s)
+                        """
+                        val_appointment = (physician_id, session_date, selected_time)
+                        mycursor.execute(sql_insert_appointment, val_appointment)
+                        mydb.commit()
+
+                        # Retrieve the generated ApptID
+                        appt_id = mycursor.lastrowid
+
+                        # Update the Physician table to set the availability to false
+                        sql_update_availability = """
+                            UPDATE Physician
+                            SET Availability = 0
+                            WHERE PhysicianID = %s
+                        """
+                        mycursor.execute(sql_update_availability, (physician_id,))
+                        mydb.commit()
+
+                        st.success(f"Appointment ID {appt_id} booked successfully for Patient ID {patient_id} with {selected_physician_name} at {session_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
+                else:
+                    st.error("The selected physician is not available for a new appointment.")
+
+                    
