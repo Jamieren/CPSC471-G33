@@ -4,18 +4,25 @@ import streamlit as st
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "fake",
+    password = "Fishies_2002",
     database = "TPMS"
 )
 
 mycursor = mydb.cursor()
 print("Connection Established")
 
+def search(username):
+    sql = "SELECT * FROM Users WHERE Username = %s"
+    val = (username,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchall()
+    return result
+
 def main():
     
     st.title("Therapist Patient Matching System")
 
-    option = st.sidebar.selectbox("Menu",("Create User", "Test2"))
+    option = st.sidebar.selectbox("Menu",("Create User", "View User"))
 
     if option == "Create User":
         st.header("Create a User", divider="blue")
@@ -63,6 +70,26 @@ def main():
                 mycursor.execute(sql_p, val_p)
                 mydb.commit()
                 st.success("Patient user created successfully!", icon = "😄")
+
+    if option == "View User":
+        st.header("Search for a User", divider="blue")
+        search_un = st.text_input("Enter the username to search")
+
+        if st.button("Search"):
+            result = search(search_un)
+
+            if(result):
+                st.success("User found!")
+                #st.write(result)
+                user_n = result[0][1]
+                user_t = result[0][3]
+                user_e = result[0][4]
+                st.markdown(f"**Username:** {user_n}")
+                st.markdown(f"**Type:** {user_t}")
+                st.markdown(f"**Email:** {user_e}")
+
+            else:
+                st.warning("User not found!")
 
 if __name__ == "__main__":
     main()
