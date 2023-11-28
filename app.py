@@ -19,6 +19,12 @@ def search(username):
     return result
 
 def main():
+    hide_decoration_bar_style = '''
+    <style>
+        header {visibility: hidden;}
+    </style>
+    '''
+    st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
     
     st.title("Therapist Patient Matching System")
 
@@ -84,9 +90,9 @@ def main():
                 user_n = result[0][1]
                 user_t = result[0][3]
                 user_e = result[0][4]
-                st.markdown(f"**Username:** {user_n}")
-                st.markdown(f"**Type:** {user_t}")
-                st.markdown(f"**Email:** {user_e}")
+                st.markdown(f":blue[**Username:**] {user_n}")
+                st.markdown(f":blue[**Type:**] {user_t}")
+                st.markdown(f":blue[**Email:**] {user_e}")
 
             else:
                 st.warning("User not found!")
