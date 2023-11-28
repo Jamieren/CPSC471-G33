@@ -4,7 +4,7 @@ import streamlit as st
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "fake",
+    password = "Fishies_2002",
     database = "TPMS"
 )
 
@@ -17,15 +17,15 @@ def main():
     option = st.sidebar.selectbox("Select an operation",("Create User", "Test2"))
 
     if option == "Create User":
-        st.subheader = "Create a User"
+        st.header("Create a User", divider="blue")
         username = st.text_input("Enter your username")
         password = st.text_input("Enter your password")
         email = st.text_input("Enter your email")
-        type = st.radio("Select user type",("Therapist", "Patient"))
+        user_type = st.radio("Select user type",("Therapist", "Patient"))
 
-        if type == "Therapist":
+        if user_type == "Therapist":
             utype = "Therapist"
-        if type == "Patient":
+        if user_type == "Patient":
             utype = "Patient"
 
         if st.button("Create"):
@@ -34,6 +34,8 @@ def main():
             mycursor.execute(sql, val)
             mydb.commit()
             st.success("User created successfully!", icon = "😄")
+
+    
 
 if __name__ == "__main__":
     main()
