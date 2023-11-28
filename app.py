@@ -16,7 +16,7 @@ def main():
     
     st.title("Therapist Patient Matching System")
 
-    option = st.sidebar.selectbox("Menu",("Create User","Create a Session", "Test2"))
+    option = st.sidebar.selectbox("Menu",("Create User","Create a Session", "Change a Session", "Test2"))
 
     if option == "Create User":
         st.header("Create a User", divider="blue")
@@ -67,6 +67,10 @@ def main():
                 
     if option == "Create a Session":
         create_session()
+        
+    if option == "Change a Session":
+        change_session()
+
 
 if __name__ == "__main__":
     main()
@@ -144,5 +148,93 @@ def create_session():
                         st.success(f"Appointment ID {appt_id} booked successfully for Patient ID {patient_id} with {selected_physician_name} at {session_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
                 else:
                     st.error("The selected physician is not available for a new appointment.")
+
+def change_session():
+    st.subheader("Change an Existing Session")
+
+    appt_id = st.text_input("Enter your Appointment ID")
+
+    if appt_id:
+        # Fetch the session details based on ApptID
+        mycursor.execute("""
+            SELECT Schedules.Date, Schedules.Time, 
+                   CONCAT(Physician.FirstName, ' ', Physician.LastName) AS PhysicianName,
+                   Schedules.PhysicianID
+            FROM Schedulesi
+            JOIN Physician ON Schedules.PhysicianID = Physician.PhysicianID
+            WHERE ApptID = %s
+        """, (appt_id,))
+        session_details = mycursor.fetchone()
+
+        if session_details:
+            # Display the session details
+            st.write(f"Date: {session_details[0]}")
+            st.write(f"Time: {session_details[1]}")
+            st.write(f"Physician Name: {session_details[2]}")
+            physician_id = session_details[3]
+
+            modify = st.button("Modify Session")
+            cancel = st.button("Cancel Session")
+
+            if modify:
+                new_date = st.date_input("Select a New Date for Appointment", value=session_details[0])
+                new_time = st.time_input("Select a New Time for Appointment", value=session_details[1])
+
+                if st.button("Confirm Changes"):
+                    # Start a transaction
+                    mydb.start_transaction()
+
+                    # Update the session information in the database
+                    sql_update_session = """
+                        UPDATE Schedules
+                        SET Date = %s, Time = %s
+                        WHERE ApptID = %s
+                    """
+                    mycursor.execute(sql_update_session, (new_date, new_time, appt_id))
+
+                    # Update the availability slot for the physician
+                    # Assuming that the availability is represented by a boolean in another table or a more complex mechanism
+                    # Here, we'll assume the schedule has been cleared for the physician at the old datetime
+                    sql_clear_old_slot = """
+                        UPDATE PhysicianAvailability
+                        SET IsBooked = FALSE
+                        WHERE PhysicianID = %s AND Date = %s AND Time = %s
+                    """
+                    mycursor.execute(sql_clear_old_slot, (physician_id, session_details[0], session_details[1]))
+
+                    # And the new slot is now booked
+                    sql_book_new_slot = """
+                        UPDATE PhysicianAvailability
+                        SET IsBooked = TRUE
+                        WHERE PhysicianID = %s AND Date = %s AND Time = %s
+                    """
+                    mycursor.execute(sql_book_new_slot, (physician_id, new_date, new_time))
+
+                    # Commit the transaction
+                    mydb.commit()
+
+                    st.success("Session updated successfully.")
+
+            if cancel:
+                # Start a transaction
+                mydb.start_transaction()
+
+                # Delete the session
+                mycursor.execute("DELETE FROM Schedules WHERE ApptID = %s", (appt_id,))
+
+                # Update the availability slot for the physician to be available again
+                sql_update_availability = """
+                    UPDATE PhysicianAvailability
+                    SET IsBooked = FALSE
+                    WHERE PhysicianID = %s AND Date = %s AND Time = %s
+                """
+                mycursor.execute(sql_update_availability, (physician_id, session_details[0], session_details[1]))
+
+                # Commit the transaction
+                mydb.commit()
+
+                st.success("Session cancelled successfully.")
+        else:
+            st.error("No session found with the provided Appointment ID. Please enter again.")
 
                     
