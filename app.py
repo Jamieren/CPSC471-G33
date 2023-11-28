@@ -12,9 +12,10 @@ mycursor = mydb.cursor()
 print("Connection Established")
 
 def main():
+    
     st.title("Therapist Patient Matching System")
 
-    option = st.sidebar.selectbox("Select an operation",("Create User", "Test2"))
+    option = st.sidebar.selectbox("Menu",("Create User", "Test2"))
 
     if option == "Create User":
         st.header("Create a User", divider="blue")
