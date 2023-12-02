@@ -3,7 +3,7 @@ import streamlit as st
 
 
 #from create_session import create_session
-from session import SessionPage
+from session import display_sessions
 
 patient_id = 1 
 
@@ -70,13 +70,11 @@ def main():
                 mydb.commit()
                 st.success("Patient user created successfully!", icon = "😄")
                 
-    if option == "Create a Session":
-        create_session(patient_id, mycursor, mydb)
+    #if option == "Create a Session":
+        #create_session(patient_id, mycursor, mydb)
         
     if option == "My Session":
-        session_page = SessionPage(mycursor, mydb)
-        # Call a method to display the sessions for the logged-in patient
-        session_page.display_sessions(patient_id)
+        display_sessions(mycursor, patient_id,mydb)
 
         
     #if option == "Change a Session":
