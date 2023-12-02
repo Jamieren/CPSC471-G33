@@ -23,8 +23,12 @@ The Therapist-Patient Matching System is a web application designed to facilitat
     pip install -r requirements.txt
    ```
 3. Set up the database:
+  ```python
   run therapists.py
+  ```
 
 ## Usage
 To run the application:
-streamlit run app.py
+  ```python
+  streamlit run app.py
+```
