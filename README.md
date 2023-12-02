@@ -11,16 +11,22 @@ User Dashboard: Custom dashboards for patients and therapists to manage profiles
 Technologies Used
 
 Frontend: Streamlit
+
 Backend: Python
 
 
 Installation and Setup
+
 Clone the repository:
+
 git clone [repository URL]
+
 Install dependencies:
-Copy code
+
 pip install -r requirements.txt
+
 Set up the database:
+
 run therapists.py
 
 Usage
