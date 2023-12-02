@@ -7,15 +7,15 @@ Automated Matching: Matches patients with therapists based on psychological prof
 Session Scheduling: Facilitates booking and managing therapy sessions.
 Feedback Collection: Allows patients to provide feedback post-session, improving future matches.
 User Dashboard: Custom dashboards for patients and therapists to manage profiles and appointments.
+
 Technologies Used
+
 Frontend: Streamlit
 Backend: Python
-Database: [Specify database technology]
-Other Libraries: [List any significant libraries or frameworks used]
+
+
 Installation and Setup
 Clone the repository:
-bash
-Copy code
 git clone [repository URL]
 Install dependencies:
 Copy code
