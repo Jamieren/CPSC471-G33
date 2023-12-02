@@ -55,6 +55,7 @@ def create_session(patient_id, mycursor, mydb):
 
         # Insert session details into the database
         insert_query = "INSERT INTO Sessions (PatientID, Notes) VALUES (%s, %s)"
+        #check if the patientID contain any SQL SELECT DELETE 
         mycursor.execute(insert_query, (patient_id, session_notes))
         mydb.commit()
 

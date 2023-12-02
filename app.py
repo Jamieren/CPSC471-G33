@@ -9,7 +9,7 @@ patient_id = 1
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "fake",
+    password = " ",
     database = "TPMS"
 )
 
