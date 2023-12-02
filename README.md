@@ -24,7 +24,7 @@ The Therapist-Patient Matching System is a web application designed to facilitat
    ```
 3. Set up the database:
   ```python
-  run therapists.py
+    run therapists.py
   ```
 
 ## Usage
