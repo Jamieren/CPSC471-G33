@@ -9,7 +9,7 @@ The Therapist-Patient Matching System is a web application designed to facilitat
 - Feedback Collection: Allows patients to provide feedback post-session, improving future matches.
 - User Dashboard: Custom dashboards for patients and therapists to manage profiles and appointments.
 
-###Technologies Used
+### Technologies Used
 - Frontend: Streamlit
 - Backend: Python
 
@@ -27,7 +27,7 @@ pip install -r requirements.txt
 run therapists.py
 ```
 
-###Usage
+### Usage
 To run the application:
 ```python
 streamlit run app.py
