@@ -117,11 +117,12 @@ def form():
         
         if matched_therapist:
             st.success("Matched with therapist!")
-            st.write("Name:", matched_therapist['Name'])
-            st.write("Expertise:", matched_therapist['Expertise'])
-            st.write("Gender:", matched_therapist['GenderPreference'])
-            st.write("Specialization:", matched_therapist['Specialization'])
-            st.write("Mode of Therapy:", matched_therapist['ModeOfTherapy'])
+            print(matched_therapist)
+            st.write("Name:", matched_therapist[2])
+            st.write("Expertise:", matched_therapist[3])
+            st.write("Gender:", matched_therapist[4])
+            st.write("Specialization:", matched_therapist[5])
+            st.write("Mode of Therapy:", matched_therapist[6])
         else:
             st.error("No therapist matches your preferences at this time.")
         
