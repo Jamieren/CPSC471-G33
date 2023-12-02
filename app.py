@@ -1,10 +1,13 @@
 import mysql.connector
 import streamlit as st
 
+from create_session import create_session
+
+
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "fake",
+    password = " ",
     database = "TPMS"
 )
 
@@ -28,7 +31,8 @@ def main():
     
     st.title("Therapist Patient Matching System")
 
-    option = st.sidebar.selectbox("Menu",("Create User", "View User"))
+    option = st.sidebar.selectbox("Menu",("Create User","Create a Session", "Test2"))
+
 
     if option == "Create User":
         st.header("Create a User", divider="blue")
@@ -76,6 +80,13 @@ def main():
                 mycursor.execute(sql_p, val_p)
                 mydb.commit()
                 st.success("Patient user created successfully!", icon = "😄")
+                
+    if option == "Create a Session":
+        create_session(patient_id, mycursor, mydb)
+        
+    #if option == "Change a Session":
+     #   change_session()
+
 
     if option == "View User":
         st.header("Search for a User", divider="blue")
@@ -99,3 +110,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
