@@ -130,7 +130,7 @@ def form():
         show_pages(
         [
             Page("chat.py", "Chat with your therapist", "📤"),
-            Page("test.py", "Home", "🏠"),
+            Page("create_session.py", "Session", "🏠"),
             Page("registration.py", "Registration", "⭐"),
         ]
         )
