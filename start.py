@@ -30,13 +30,13 @@ def main():
         if verify_login(username, password):
             st.success('Login Successful!')
             show_pages(
-                [
-                    Page("app.py", "Home", "🏠"),
-                    Page("test.py", "Page 2", ":books:"),
-                    Page("start.py", "Login", "🏠"),
-
-                ]
-                )
+            [
+                Page("chat.py", "Chat with your therapist", "📤"),
+                Page("create_session.py", "Session", "🏠"),
+                Page("registration.py", "Registration", "⭐"),
+            ]
+            )
+        
         else:
             
             st.error('Username or Password is incorrect')
