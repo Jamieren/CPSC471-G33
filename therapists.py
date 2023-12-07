@@ -30,7 +30,14 @@ mydb = mysql.connector.connect(
     database = "TPMS_471"
 )
 
-
+def reset_database(mycursor):
+    queries = [
+        "DELETE FROM Therapists",
+        "DELETE FROM Users WHERE UserType = 'Therapist'"
+    ]
+    for query in queries:
+        mycursor.execute(query)
+        
 mycursor = mydb.cursor()
 # Function to hash a password
 def hash_password(password):
@@ -44,13 +51,12 @@ def create_therapists():
 
     all_combinations = list(itertools.product(primary_concerns, genders, specializations, modes))
 
-    if len(names) < len(all_combinations):
-        print("Warning: There are not enough names to cover all combinations.")
-        return  
-    
-    therapist_id = 1  
+    # If there are more combinations than names, repeat the names list as needed
+    extended_names = itertools.cycle(names)  # This will cycle through the names list indefinitely
+    t = 1
     therapists = []
-    for name, combination in zip(names, all_combinations):
+    for name, combination in zip(extended_names, all_combinations):
+        therapist_id = t 
         therapists.append({
             "therapist_id": therapist_id,
             "name": name,
@@ -59,12 +65,12 @@ def create_therapists():
             "specialization": combination[2],
             "mode": combination[3]
         })
-        therapist_id += 1
+        t +=1 
+    print (therapists)
     
     for therapist in therapists:
-        therapist_id = therapist['therapist_id'] 
-        default_password = "default_password"
-        default_username = f"{therapist['name']}_{therapist['therapist_id']}"  # Modified username
+        default_password = hash_password("default_password")  # Hash the default password
+        default_username = f"{therapist['name']}_{therapist['therapist_id']}"
         default_email = f"{default_username.replace(' ', '').lower()}@therapy.com"
 
         # Check if the username already exists
@@ -89,7 +95,7 @@ def create_therapists():
                 INSERT INTO Therapists (UserID, TherapistID, Name, Expertise, GenderPreference, Specialization, ModeOfTherapy) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
-            val_therapist = (user_id, therapist_id, therapist['name'], therapist['expertise'], therapist['gender'], therapist['specialization'], therapist['mode'])
+            val_therapist = (user_id, therapist['therapist_id'], therapist['name'], therapist['expertise'], therapist['gender'], therapist['specialization'], therapist['mode'])
             mycursor.execute(sql_therapist, val_therapist)
             print("done 2")
 
@@ -99,4 +105,6 @@ def create_therapists():
 
     mydb.commit()
     
+reset_database(mycursor)
+
 create_therapists()
