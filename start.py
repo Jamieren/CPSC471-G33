@@ -11,6 +11,7 @@ mydb = mysql.connector.connect(
     database="TPMS_471"
 )
 mycursor = mydb.cursor()
+username = "'" 
 
 def verify_login(username, password):
     # Function to verify login credentials
@@ -22,7 +23,7 @@ def verify_login(username, password):
     return result is not None
 
 # Streamlit UI for login
-def main():
+def main(username):
     st.title("Login Page")
     username = st.text_input("Username")
     password = st.text_input("Password", type='password')
@@ -32,7 +33,7 @@ def main():
             show_pages(
             [
                 Page("chat.py", "Chat with your therapist", "📤"),
-                Page("create_session.py", "Session", "🏠"),
+                Page("session_login.py", "Session", "🏠"),
                 Page("registration.py", "Registration", "⭐"),
             ]
             )
@@ -53,4 +54,4 @@ def main():
         )
 
 if __name__ == "__main__":
-    main()
+    main(username)

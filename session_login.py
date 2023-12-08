@@ -1,6 +1,8 @@
 import streamlit as st
 import datetime
 import mysql.connector
+from start import username, mycursor, mydb
+
 
 def display_sessions(mycursor, patient_id,mydb):
     st.header("Your Booked Sessions")
@@ -90,4 +92,6 @@ def cancel_session(mycursor, session_id, mydb):
         mydb.commit()
 
         st.success("The session has been cancelled.")
+        
+display_sessions(mycursor, username,mydb)
 

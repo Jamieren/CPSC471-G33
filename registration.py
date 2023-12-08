@@ -11,7 +11,7 @@ mydb = mysql.connector.connect(
     password = "ZxcZxc12",
     database = "TPMS_471"
 )
-
+user_name = ""
 mycursor = mydb.cursor()
 # Function to hash a password
 def hash_password(password):
@@ -40,6 +40,7 @@ def form():
     # Personal Information
     st.header('Personal Information')
     full_name = st.text_input('Full Name')
+    user_name = st.text_input('UserName')
     email = st.text_input('Email Address')
     password = st.text_input('Password', type='password')
     age = st.number_input('Age', min_value=1, max_value=100)
@@ -74,7 +75,7 @@ def form():
         
         # Insert into Users table
         sql_user = "INSERT INTO Users (Username, Password, UserType, Email) VALUES (%s, %s, %s, %s)"
-        val_user = (full_name, hashed_password, 'Patient', email)
+        val_user = (user_name, hashed_password, 'Patient', email)
         mycursor.execute(sql_user, val_user)
         user_id = mycursor.lastrowid 
 
@@ -130,7 +131,7 @@ def form():
         show_pages(
         [
             Page("chat.py", "Chat with your therapist", "📤"),
-            Page("create_session.py", "Session", "🏠"),
+            Page("session_new.py", "Session", "🏠"),
             Page("registration.py", "Registration", "⭐"),
         ]
         )
