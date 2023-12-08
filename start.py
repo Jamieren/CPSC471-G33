@@ -33,7 +33,9 @@ def main():
                 [
                     Page("start.py", "Login", "🏠"),
                     Page("create_session.py","Create Session", "🗓️"),
-                    Page("feedback.py", "Feedback","💭")
+                    Page("feedback.py", "Feedback","💌"),
+                    Page("chat.py", "Chat With Your Therapist","💬"),
+                    Page("dashboard.py", "Dashboard","💟"),
                 ]
                 )
         else:
