@@ -17,7 +17,6 @@ mycursor = mydb.cursor()
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
-
 def match_therapist(primary_concerns, preferred_gender, preferred_specializations, preferred_mode):
     query = """
     SELECT * FROM Therapists
@@ -100,14 +99,9 @@ def form():
 
         val_patient = (user_id, str(psychological_profile), str(therapy_preferences))
         mycursor.execute(sql_patient, val_patient)
+        patient_id = mycursor.lastrowid  # Fetch the last inserted id for Patient
 
         mydb.commit()
-        print(
-                    primary_concerns,
-                    preferred_gender,
-                    preferred_specialization,
-                    preferred_mode,
-                )
         matched_therapist = match_therapist(
                     primary_concerns,
                     preferred_gender,
@@ -116,7 +110,17 @@ def form():
                 )
         
         if matched_therapist:
+            print(matched_therapist)
             st.success("Matched with therapist!")
+            therapist_id = matched_therapist[1]
+            print("Debug - Therapist ID:", therapist_id)
+            print("Debug - Patient ID:", patient_id)
+            
+            sql_match = "INSERT INTO Matches (TherapistID, PatientID) VALUES (%s, %s)"
+            val_match = (therapist_id, patient_id)
+            mycursor.execute(sql_match, val_match)
+            
+            mydb.commit()
             print(matched_therapist)
             st.write("Name:", matched_therapist[2])
             st.write("Expertise:", matched_therapist[3])
@@ -129,8 +133,10 @@ def form():
         st.success("Patient account created successfully!", icon="😄")
         show_pages(
         [
-            Page("chat.py", "Chat with your therapist", "📤"),
-            Page("test.py", "Home", "🏠"),
+            Page("create_session.py","Create Session", "🗓️"),
+            Page("feedback.py", "Feedback","💌"),
+            Page("chat.py", "Chat With Your Therapist","💬"),
+            Page("dashboard.py", "Dashboard","💟"),
             Page("registration.py", "Registration", "⭐"),
         ]
         )
