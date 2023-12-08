@@ -26,7 +26,7 @@ names = [
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "ZxcZxc12",
+    password = "Fishies_2002",
     database = "TPMS_471"
 )
 

@@ -8,7 +8,7 @@ import hashlib
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "ZxcZxc12",
+    password = "Fishies_2002",
     database = "TPMS_471"
 )
 
@@ -130,7 +130,7 @@ def form():
         show_pages(
         [
             Page("chat.py", "Chat with your therapist", "📤"),
-            Page("create_session.py", "Session", "🏠"),
+            Page("test.py", "Home", "🏠"),
             Page("registration.py", "Registration", "⭐"),
         ]
         )

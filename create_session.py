@@ -3,49 +3,62 @@ import streamlit as st
 import datetime
 
 mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="ZxcZxc12",
-    database="TPMS_471"
+    host = "localhost",
+    user = "root",
+    password = "Fishies_2002",
+    database = "TPMS_471"
 )
+
 mycursor = mydb.cursor()
+print("Connection Established")
 
-def create_session():
-    st.header("Schedule Your Therapy Session")
+def getUserID(username):
+    sql = "SELECT UserID FROM Users WHERE Username = %s"
+    val = (username,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchall()
+    return result
 
-     # Current datetime for range check
-    now = datetime.datetime.now()
-    
-    # Session details input
-    selected_date = st.date_input("Please choose the date for your session")
-    selected_time = st.time_input("Please choose a time for your session")
-    
-    # Combine date and time into a single datetime object
-    selected_datetime = datetime.datetime.combine(selected_date, selected_time)
+def getpatientID(userID):
+    sql = "SELECT PatientID FROM Patients WHERE UserID = %s"
+    val = (userID,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchall()
+    return result
 
+st.header("Create Session", divider="blue")
+st.session_state["username"] = st.session_state["username"]
+p_user = st.session_state["username"]
+#st.write(p_user)
 
-    # Check if the selected datetime is in the past
-    if selected_datetime < now:
-        st.error("Cannot select a date and time in the past. Please select a future date and time.")
-        return
+# get logged in user's userID
+user_result = getUserID(p_user)
+user_id = user_result[0][0]  # Extract UserID from the first (and only) tuple
+#st.write(user_id)
 
-    # Confirm button
+# get logged in user's patientID
+patient_result = getpatientID(user_id)
+patient_id = patient_result[0][0]
+#st.write(patient_id)
+
+# Session details input
+selected_date = st.date_input("Select the date for your session")
+selected_time = st.time_input("Select the time for your session")
+
+# Combine date and time into a single datetime object
+selected_datetime = datetime.datetime.combine(selected_date, selected_time)
+
+# Current datetime for range check
+now = datetime.datetime.now()
+
+# Check if the selected datetime is in the past
+if selected_datetime < now:
+    st.error("Cannot select a date and time in the past. Please select a future date and time.")
+else:
     if st.button("Confirm Session"):
-        # Convert selected date and time into a string format
-        session_notes = f"Session scheduled for {selected_date} at {selected_time}"
-
         # Insert session details into the database
-        insert_query = "INSERT INTO Sessions (PatientID, Notes) VALUES (%s, %s)"
-        #check if the patientID contain any SQL SELECT DELETE 
-        mycursor.execute(insert_query, (patient_id, session_notes))
+        insert_query = "INSERT INTO Sessions (PatientID, SessionTimestamp) VALUES (%s, %s)"
+        mycursor.execute(insert_query, (patient_id, selected_datetime))
         mydb.commit()
 
-        # Retrieve the session ID of the newly created session
-        session_id = mycursor.lastrowid
-
-        # Display confirmation details including Session ID, Date, and Time
-        st.success(f"Your session has been scheduled successfully! Session ID: {session_id}")
-        st.info(f"Session Date: {selected_date}, Time: {selected_time}")
-        
-create_session()
-
+        st.success("Your session has been scheduled successfully!")

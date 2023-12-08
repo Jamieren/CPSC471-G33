@@ -7,7 +7,7 @@ from st_pages import Page, show_pages, add_page_title, hide_pages
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="ZxcZxc12",
+    password="Fishies_2002",
     database="TPMS_471"
 )
 mycursor = mydb.cursor()
@@ -24,19 +24,20 @@ def verify_login(username, password):
 # Streamlit UI for login
 def main():
     st.title("Login Page")
-    username = st.text_input("Username")
+    username = st.text_input("Username", key="username")
     password = st.text_input("Password", type='password')
     if st.button('Login'):
         if verify_login(username, password):
             st.success('Login Successful!')
             show_pages(
-            [
-                Page("chat.py", "Chat with your therapist", "📤"),
-                Page("create_session.py", "Session", "🏠"),
-                Page("registration.py", "Registration", "⭐"),
-            ]
-            )
-        
+                [
+                    Page("app.py", "Home", "🏠"),
+                    Page("test.py", "Page 2", ":books:"),
+                    Page("start.py", "Login", "🏠"),
+                    Page("create_session.py","Create Session", "🗓️"),
+                    Page("feedback.py", "Feedback","💭")
+                ]
+                )
         else:
             
             st.error('Username or Password is incorrect')
