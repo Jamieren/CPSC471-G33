@@ -2,10 +2,10 @@ import mysql.connector
 import streamlit as st
 
 mydb = mysql.connector.connect(
-    host = "localhost",
-    user = "root",
-    password = "Fishies_2002",
-    database = "TPMS_471"
+    host="localhost",
+    user="root",
+    password="Fishies_2002",
+    database="TPMS_471"
 )
 
 mycursor = mydb.cursor()
@@ -25,22 +25,18 @@ def getpatientID(userID):
     result = mycursor.fetchall()
     return result
 
-def getPatients():
-    mycursor.execute("SELECT PatientID FROM Patients")
-    data = mycursor.fetchall()
-    return data
-    # return [value[0] for value in data]
-
 def getSessions(patientID):
     sql = "SELECT SessionID FROM Sessions WHERE PatientID = %s"
     val = (patientID,)
     mycursor.execute(sql, val)
     result = mycursor.fetchall()
-    return result
+    formatted_sessions = [f"Session {session[0]}" for session in result]
+    raw_sessions = [session[0] for session in result]
+    return formatted_sessions, raw_sessions
 
 def getSession(sessionID):
     sql = "SELECT * FROM Sessions WHERE SessionID = %s"
-    val = (sessionID)
+    val = (sessionID,)
     mycursor.execute(sql, val)
     result = mycursor.fetchall()
     return result
@@ -58,25 +54,23 @@ st.header("Next Appointment Details", divider="blue")
 # get logged in user's username
 st.session_state["username"] = st.session_state["username"]
 p_user = st.session_state["username"]
-#st.write(p_user)
 
 # get logged in user's userID
 user_result = getUserID(p_user)
-user_id = user_result[0][0]  # Extract UserID from the first (and only) tuple
-#st.write(user_id)
+user_id = user_result[0][0]
 
 # get logged in user's patientID
 patient_result = getpatientID(user_id)
 patient_id = patient_result[0][0]
-#st.write(patient_id)
 
 # get patient's sessions
-sessions = getSessions(patient_id)
-s_id = st.selectbox("Select a sessionID", sessions)
+formatted_sessions, raw_sessions = getSessions(patient_id)
+s_id_index = st.selectbox("Select a session", range(len(formatted_sessions)), format_func=lambda i: formatted_sessions[i])
+session_id = raw_sessions[s_id_index]
 
 # get session information
-session = getSession(s_id)
-session_id = s_id[0]
+session = getSession(session_id)
+session_id = session[0][0]
 
 # get session therapist information
 t_id = session[0][1]
@@ -91,7 +85,7 @@ st.markdown(f":blue[**Specialization:**] {t_sp}")
 
 # feedback form here as well
 st.subheader("Appointment Feedback")
-rating = st.slider("Rate your experience from 1 to 5",1, 5, 1)
+rating = st.slider("Rate your experience from 1 to 5", 1, 5, 1)
 if rating == 1:
     st.markdown("<h3 style='text-align: center;'>⭐️</h3>", unsafe_allow_html=True)
 if rating == 2:
@@ -102,7 +96,7 @@ if rating == 4:
     st.markdown("<h3 style='text-align: center;'>⭐️⭐️⭐️⭐️</h3>", unsafe_allow_html=True)
 if rating == 5:
     st.markdown("<h3 style='text-align: center;'>⭐️⭐️⭐️⭐️⭐️</h3>", unsafe_allow_html=True)
-        
+
 comment = st.text_area("Additional comments")
 
 if st.button("Submit"):
@@ -117,15 +111,15 @@ if st.button("Submit"):
             feedback_exists = True
     except Exception as e:
         st.error(f"Error checking existing feedback: {str(e)}")
-        if feedback_exists:
-            st.warning("Feedback has already been submitted for this session",icon="😉")
-        else:
-            try:
-                # Insert new feedback into the database
-                sql = "INSERT INTO Feedback(SessionID, Rating, Comment) VALUES(%s, %s, %s)"
-                val = (session_id, rating, comment)
-                mycursor.execute(sql, val)
-                mydb.commit()
-                st.success("Feedback submitted successfully! Thank you for your input", icon="😄")
-            except Exception as e:
-                st.error(f"Error submitting feedback: {str(e)}")
+    if feedback_exists:
+        st.warning("Feedback has already been submitted for this session", icon="😉")
+    else:
+        try:
+            # Insert new feedback into the database
+            sql = "INSERT INTO Feedback(SessionID, Rating, Comment) VALUES(%s, %s, %s)"
+            val = (session_id, rating, comment)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            st.success("Feedback submitted successfully! Thank you for your input", icon="😄")
+        except Exception as e:
+            st.error(f"Error submitting feedback: {str(e)}")

@@ -65,18 +65,22 @@ def display_dashboard():
     user_details = get_user_details(user_id)
     patient_details = get_patient_details(patient_id)
     therapist_details = get_matched_therapist(patient_id)
-    st.subheader("Your Information")
-    st.text(f"Name: {user_details[1]}")
-    st.text(f"Email: {user_details[4]}")
+    st.subheader(f"Welcome, :blue[{user_details[1]}]", divider="blue")
+    st.markdown(f":blue[**Name:**] {user_details[1]}")
+    st.markdown(f":blue[**Email:**] {user_details[4]}")
+    #st.text(f"Name: {user_details[1]}")
+    #st.text(f"Email: {user_details[4]}")
     patient_info = json.loads(patient_details[2].replace("'", '"'))  # replacing single quotes with double quotes for valid JSON
 
-    st.text(f"Age: {patient_info['age']}")
-    st.text(f"Sex: {patient_info['sex']}")
-    st.text(f"Primary Concerns: {patient_info['primary_concerns']}")
-    st.text(f"Therapy Goals: {patient_info['therapy_goals']}")
+    st.markdown(f":blue[**Age:**] {patient_info['age']}")
+    st.markdown(f":blue[**Sex:**] {patient_info['sex']}")
+    st.markdown(f":blue[**Primary Concerns:**] {patient_info['primary_concerns']}")
+    st.markdown(f":blue[**Therapy Goals:**] {patient_info['therapy_goals']}")
+    #st.text(f"Age: {patient_info['age']}")
+    #st.text(f"Sex: {patient_info['sex']}")
+    #st.text(f"Primary Concerns: {patient_info['primary_concerns']}")
+    #st.text(f"Therapy Goals: {patient_info['therapy_goals']}")
     
-    
-
     if therapist_details:
         st.subheader("Your Matched Therapist")
         st.text(f"Name: {therapist_details[2]}")

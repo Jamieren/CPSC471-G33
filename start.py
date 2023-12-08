@@ -31,11 +31,11 @@ def main():
             st.success('Login Successful!')
             show_pages(
                 [
-                    Page("start.py", "Login", "🏠"),
+                    #Page("start.py", "Login", "🏠"),
+                    Page("dashboard.py", "Dashboard","💟"),
                     Page("create_session.py","Create Session", "🗓️"),
                     Page("feedback.py", "Feedback","💌"),
                     Page("chat.py", "Chat With Your Therapist","💬"),
-                    Page("dashboard.py", "Dashboard","💟"),
                 ]
                 )
         else:
