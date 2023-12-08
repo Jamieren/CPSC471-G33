@@ -5,7 +5,7 @@ import datetime
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "ZxcZxc12",
+    password = "Fishies_2002",
     database = "TPMS_471"
 )
 
@@ -68,6 +68,7 @@ def display_sessions(mycursor, mydb):
         
 
 def create_session(mycursor,patient_id,mydb):
+    st.session_state["username"] = st.session_state["username"]
     # Session details input
     selected_date = st.date_input("Select the date for your session")
     selected_time = st.time_input("Select the time for your session")
@@ -92,6 +93,7 @@ def create_session(mycursor,patient_id,mydb):
 
 
 def modify_session(mycursor, session_id, mydb):
+    st.session_state["username"] = st.session_state["username"]
     # Get the existing session timestamp
     mycursor.execute("SELECT SessionTimestamp FROM Sessions WHERE SessionID = %s", (session_id,))
     current_timestamp = mycursor.fetchone()
@@ -118,6 +120,7 @@ def modify_session(mycursor, session_id, mydb):
                 st.success("Your session has been updated successfully!")
 
 def cancel_session(mycursor, session_id, mydb):
+    st.session_state["username"] = st.session_state["username"]
     # Confirmation before deletion
     if st.button("Confirm Delete", key=f"confirm_delete_{session_id}"):
         # Delete the session from the database
