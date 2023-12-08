@@ -7,7 +7,7 @@ from st_pages import Page, show_pages, add_page_title, hide_pages
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="Fishies_2002",
+    password="ZxcZxc12",
     database="TPMS_471"
 )
 mycursor = mydb.cursor()
@@ -31,8 +31,6 @@ def main():
             st.success('Login Successful!')
             show_pages(
                 [
-                    Page("app.py", "Home", "🏠"),
-                    Page("test.py", "Page 2", ":books:"),
                     Page("start.py", "Login", "🏠"),
                     Page("create_session.py","Create Session", "🗓️"),
                     Page("feedback.py", "Feedback","💭")
