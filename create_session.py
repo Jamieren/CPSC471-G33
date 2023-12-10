@@ -5,8 +5,8 @@ import datetime
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "Fishies_2002",
-    database = "TPMS_471"
+    password = "Rzh5877030060!",
+    database = "TPMS"
 )
 
 AVAILABLE_SLOTS = [
@@ -30,52 +30,7 @@ def getpatientID(userID):
     mycursor.execute(sql, val)
     result = mycursor.fetchall()
     return result
-
-"""
-def display_sessions(mycursor, mydb):
-    st.session_state["username"] = st.session_state["username"]
-    p_user = st.session_state["username"]
-
-    # get logged in user's userID
-    user_result = getUserID(p_user)
-    user_id = user_result[0][0]  # Extract UserID from the first (and only) tuple
-
-    # get logged in user's patientID
-    patient_result = getpatientID(user_id)
-    patient_id = patient_result[0][0]
-    st.header("Your Booked Sessions")
-    # Query to retrieve booked sessions
-    mycursor.execute("SELECT SessionID, SessionDate, SessionTime FROM Sessions WHERE PatientID = %s AND IsBooked = True ORDER BY SessionDate, SessionTime", (patient_id,))
-    sessions = mycursor.fetchall()
-
-    if not sessions:
-        st.write("You have no sessions set up. Please create a new session.")
-    else:
-        for session in sessions:
-            session_id, session_date, session_time = session
-            st.text(f"Session ID: {session_id}")
-            st.text(f"Scheduled for: {session_date} at {session_time}")
-            
-            if st.button("Modify", key=f"modify_{session_id}"):
-                modify_session(mycursor, session_id, mydb)
-            if st.button("Delete", key=f"delete_{session_id}"):
-                cancel_session(mycursor, session_id, mydb)  # Revised deletion logic
-            if st.button("Create new Session"):
-                create_session(mycursor, patient_id,mydb)
-
-         col1, col2 = st.columns(2)
-            
-            if col1.button("Modify", key=f"modify_{session_id}"):
-                modify_session(mycursor,session_id,mydb)
-            with col2:
-                if st.button("Delete", key=f"delete_{session_id}"):
-                    if st.button("Confirm Delete", key=f"confirm_delete_{session_id}"):
-                        cancel_session(mycursor, session_id, mydb)
-
-
-        st.markdown("---")
-"""
-            
+          
 def display_sessions(mycursor, mydb, patient_id):
     st.header("Your Booked Sessions")
 
@@ -85,6 +40,10 @@ def display_sessions(mycursor, mydb, patient_id):
 
     if not sessions:
         st.write("You have no sessions set up. Please create a new session.")
+        # Add a button to create a new session
+        if st.button('Create New Session'):
+            create_session(mycursor, patient_id, mydb) 
+            
     else:
         for session in sessions:
             session_id, session_date, session_time = session
@@ -116,29 +75,42 @@ def create_session(mycursor, patient_id, mydb):
     # Step 1: Let the patient pick a date from the calendar
     selected_date = st.date_input("Select the date for your session", min_value=datetime.date.today())
 
-    # Step 2: Query the database for the selected date's slots
-    mycursor.execute("SELECT SessionTime, IsBooked FROM Sessions WHERE SessionDate = %s", (selected_date,))
-    day_slots = mycursor.fetchall()
-    day_slots_dict = {slot.strftime("%H:%M:%S"): booked for slot, booked in day_slots}
+    # Only run the slot query and booking logic if a date is selected
+    if selected_date:
+        # Step 2: Query the database for the selected date's slots
+        today = datetime.date.today()
+        now = datetime.datetime.now().time() if selected_date == today else datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
+        mycursor.execute("""
+            SELECT SessionTime, IsBooked
+            FROM Sessions
+            WHERE SessionDate = %s AND (IsBooked = 0 OR SessionDate > %s OR (SessionDate = %s AND SessionTime > %s))
+            """, (selected_date, today, today, now)
+        )
+        day_slots = mycursor.fetchall()
+        day_slots_dict = {slot.strftime("%H:%M:%S"): booked for slot, booked in day_slots}
 
-    # Step 3: Display all slots, marking those unavailable if already booked
-    st.write("Please select a time slot:")
-    for slot in AVAILABLE_SLOTS:
-        slot_time = datetime.datetime.strptime(slot, "%H:%M:%S").time()
-        slot_str = slot_time.strftime("%I%p-%I%p")
-        if day_slots_dict.get(slot, 0):  # If the slot is booked
-            st.write(f"{slot_str} - Not Available")
-        else:
-            if st.button(f"Book {slot_str}"):
-                # Step 4: Book the slot if it's available
-                if day_slots_dict.get(slot, 0):
-                    st.error("Sorry, this slot is not available. Please choose a different one.")
-                else:
+        # Step 3: Display all slots, marking those unavailable if already booked or in the past
+        st.write("Please select a time slot:")
+        slot_booked = False
+        for slot in AVAILABLE_SLOTS:
+            slot_time = datetime.datetime.strptime(slot, "%H:%M:%S").time()
+            slot_str = slot_time.strftime("%I:%M %p")
+            # Check if the slot is booked or in the past for today
+            if day_slots_dict.get(slot, 0) or (selected_date == today and slot_time < now):
+                st.write(f"{slot_str} - Not Available")
+            else:
+                if st.button(f"Book {slot_str}", key=slot):
                     insert_query = "INSERT INTO Sessions (PatientID, SessionDate, SessionTime, IsBooked) VALUES (%s, %s, %s, %s)"
                     mycursor.execute(insert_query, (patient_id, selected_date, slot_time, 1))
                     mydb.commit()
                     st.success(f"Your session for {slot_str} has been booked successfully!")
-                    break  # Exit the loop after booking to prevent multiple bookings
+                    slot_booked = True
+                    # No break needed, Streamlit handles button states uniquely based on the 'key' parameter
+                    
+        # If a slot is booked, re-run the slot availability check to update the display
+        if slot_booked:
+            st.experimental_rerun()
+
                 
 def modify_session(mycursor, session_id, mydb):
     st.subheader("Modify Your Session")
@@ -179,54 +151,6 @@ def modify_session(mycursor, session_id, mydb):
         st.error("Session details not found.")
 
 
-"""def create_session(mycursor,patient_id,mydb):
-    # Session details input
-    selected_date = st.date_input("Select the date for your session")
-    selected_time = st.time_input("Select the time for your session")
-
-    # Combine date and time into a single datetime object
-    selected_datetime = datetime.datetime.combine(selected_date, selected_time)
-
-    # Current datetime for range check
-    now = datetime.datetime.now()
-
-    # Check if the selected datetime is in the past
-    if selected_datetime < now:
-        st.error("Cannot select a date and time in the past. Please select a future date and time.")
-    else:
-        if st.button("Confirm Session"):
-            insert_query = "INSERT INTO Sessions (PatientID, SessionDate, SessionTime, IsBooked) VALUES (%s, %s, %s,True)"
-            mycursor.execute(insert_query, (patient_id, selected_date, selected_time))
-            mydb.commit()
-            st.success("Your session has been scheduled successfully!")
-
-
-def modify_session(mycursor, session_id, mydb):
-    # Get the existing session timestamp
-    mycursor.execute("SELECT SessionTimestamp FROM Sessions WHERE SessionID = %s", (session_id,))
-    current_timestamp = mycursor.fetchone()
-
-    if current_timestamp:
-        # Allow the user to modify the date and time
-        st.write(f"Current session time: {current_timestamp[0]}")
-        new_date = st.date_input("Select the new date for your session", current_timestamp[0].date())
-        new_time = st.time_input("Select the new time for your session")
-
-        # Combine the new date and time
-        new_datetime = datetime.datetime.combine(new_date, new_time)
-        now = datetime.datetime.now()
-
-        if new_datetime < now:
-            st.error("Cannot select a date and time in the past. Please select a future date and time.")
-        else:
-            if st.button("Confirm Changes"):
-                # Update session details in the database
-                update_query = "UPDATE Sessions SET SessionTimestamp = %s WHERE SessionID = %s"
-                mycursor.execute(update_query, (new_datetime, session_id))
-                mydb.commit()
-
-                st.success("Your session has been updated successfully!")
-"""
 def cancel_session(mycursor, session_id, mydb):
     # Confirmation before deletion
     if st.button("Confirm Delete", key=f"confirm_delete_{session_id}"):
@@ -236,7 +160,7 @@ def cancel_session(mycursor, session_id, mydb):
         mydb.commit()
 
         st.success("The session has been cancelled.")
-
+        
 # get logged in user's username
 st.session_state["username"] = st.session_state["username"]
 p_user = st.session_state["username"]
@@ -252,4 +176,4 @@ patient_result = getpatientID(user_id)
 patient_id = patient_result[0][0]
 #st.write(patient_id)
         
-display_sessions(mycursor,mydb, patient_id)
+display_sessions(mycursor, mydb, patient_id)
