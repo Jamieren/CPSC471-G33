@@ -5,8 +5,8 @@ import datetime
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "Rzh5877030060!",
-    database = "TPMS"
+    password = "Fishies_2002",
+    database = "TPMS_471"
 )
 
 AVAILABLE_SLOTS = [
@@ -236,5 +236,20 @@ def cancel_session(mycursor, session_id, mydb):
         mydb.commit()
 
         st.success("The session has been cancelled.")
+
+# get logged in user's username
+st.session_state["username"] = st.session_state["username"]
+p_user = st.session_state["username"]
+#st.write(p_user)
+
+# get logged in user's userID
+user_result = getUserID(p_user)
+user_id = user_result[0][0]  # Extract UserID from the first (and only) tuple
+#st.write(user_id)
+
+# get logged in user's patientID
+patient_result = getpatientID(user_id)
+patient_id = patient_result[0][0]
+#st.write(patient_id)
         
-display_sessions(mycursor,mydb)
+display_sessions(mycursor,mydb, patient_id)
