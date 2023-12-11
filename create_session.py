@@ -81,16 +81,21 @@ def create_session(mycursor, patient_id, mydb):
         if isinstance(slot, datetime.time):  # Check if slot is a time object
             slot_str = slot.strftime("%H:%M:%S")
         else:
-            # Handle timedelta or other types if necessary
-            slot_str = str(slot)  # or convert timedelta to time, based on your logic
+            slot_str = str(slot)
         day_slots_dict[slot_str] = booked
 
-
-    # Step 3: Display all slots, marking those unavailable if already booked
+    # Step 3: Display all slots, marking those unavailable if already booked or in the past
     st.write("Please select a time slot:")
+    current_time = datetime.datetime.now().time()
     for slot in AVAILABLE_SLOTS:
         slot_time = datetime.datetime.strptime(slot, "%H:%M:%S").time()
         slot_str = slot_time.strftime("%I%p-%I%p")
+
+        # Block the slot if it's in the past for today's date
+        if selected_date == datetime.date.today() and slot_time < current_time:
+            st.write(f"{slot_str} - Not Available")
+            continue
+
         if day_slots_dict.get(slot, 0):  # If the slot is booked
             st.write(f"{slot_str} - Not Available")
         else:
@@ -104,7 +109,7 @@ def create_session(mycursor, patient_id, mydb):
                     mydb.commit()
                     st.success(f"Your session for {slot_str} has been booked successfully!")
                     break  # Exit the loop after booking to prevent multiple bookings
-                
+
 def modify_session(mycursor, session_id, mydb):
     st.subheader("Modify Your Session")
 
