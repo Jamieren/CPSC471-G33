@@ -7,8 +7,8 @@ from st_pages import Page, show_pages, add_page_title, hide_pages
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="Fishies_2002",
-    database="TPMS_471"
+    password = "Rzh5877030060!",
+    database = "TPMS"
 )
 mycursor = mydb.cursor()
 

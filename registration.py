@@ -8,8 +8,8 @@ import hashlib
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "ZxcZxc12",
-    database = "TPMS_471"
+   password = "Rzh5877030060!",
+    database = "TPMS"
 )
 
 mycursor = mydb.cursor()

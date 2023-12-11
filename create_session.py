@@ -5,8 +5,8 @@ import datetime
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "Fishies_2002",
-    database = "TPMS_471"
+    password = "Rzh5877030060!",
+    database = "TPMS"
 )
 
 AVAILABLE_SLOTS = [
@@ -74,7 +74,17 @@ def create_session(mycursor, patient_id, mydb):
     # Step 2: Query the database for the selected date's slots
     mycursor.execute("SELECT SessionTime, IsBooked FROM Sessions WHERE SessionDate = %s", (selected_date,))
     day_slots = mycursor.fetchall()
-    day_slots_dict = {slot.strftime("%H:%M:%S"): booked for slot, booked in day_slots}
+
+    # Convert day_slots to the correct format
+    day_slots_dict = {}
+    for slot, booked in day_slots:
+        if isinstance(slot, datetime.time):  # Check if slot is a time object
+            slot_str = slot.strftime("%H:%M:%S")
+        else:
+            # Handle timedelta or other types if necessary
+            slot_str = str(slot)  # or convert timedelta to time, based on your logic
+        day_slots_dict[slot_str] = booked
+
 
     # Step 3: Display all slots, marking those unavailable if already booked
     st.write("Please select a time slot:")
@@ -132,16 +142,33 @@ def modify_session(mycursor, session_id, mydb):
                     break  # Exit after the change to prevent multiple changes
     else:
         st.error("Session details not found.")
-
+        
 def cancel_session(mycursor, session_id, mydb):
-    # Confirmation before deletion
-    if st.button("Confirm Delete", key=f"confirm_delete_{session_id}"):
-        # Delete the session from the database
-        update_query = "UPDATE Sessions SET IsBooked = False WHERE SessionID = %s"
-        mycursor.execute(update_query, (session_id,))
-        mydb.commit()
+    st.subheader("Cancel Your Session")
 
-        st.success("The session has been cancelled.")
+    # Provide a button to initiate cancellation
+    if st.button("Cancel Session", key=f"cancel_{session_id}"):
+        # Set a flag in the session state to indicate cancellation process has started
+        st.session_state[f'confirm_cancel_{session_id}'] = True
+
+    # Check if the cancellation process has been initiated
+    if st.session_state.get(f'confirm_cancel_{session_id}', False):
+        st.warning("Are you sure you want to cancel this session?")
+        col1, col2 = st.columns(2)
+        if col1.button("Yes, Cancel it", key=f"confirm_{session_id}"):
+            # Delete the session from the database
+            delete_query = "DELETE FROM Sessions WHERE SessionID = %s"
+            mycursor.execute(delete_query, (session_id,))
+            mydb.commit()
+            st.success("The session has been successfully cancelled.")
+            # Reset the confirmation state
+            st.session_state[f'confirm_cancel_{session_id}'] = False
+
+        if col2.button("No, Keep it", key=f"abort_{session_id}"):
+            st.info("Session cancellation aborted.")
+            # Reset the confirmation state
+            st.session_state[f'confirm_cancel_{session_id}'] = False
+
 
 # get logged in user's username
 st.session_state["username"] = st.session_state["username"]

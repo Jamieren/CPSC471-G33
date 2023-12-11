@@ -4,8 +4,8 @@ import streamlit as st
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "Fishies_2002",
-    database = "TPMS_471"
+    password = "Rzh5877030060!",
+    database = "TPMS"
 )
 
 mycursor = mydb.cursor()
