@@ -2,6 +2,7 @@ import mysql.connector
 import streamlit as st
 import datetime
 
+
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
@@ -113,24 +114,41 @@ def modify_session(mycursor, session_id, mydb):
     session_details = mycursor.fetchone()
 
     if session_details:
-        current_date, current_time = session_details
+        current_date, session_time = session_details
+        
+        # Convert session_time to a datetime.time object if it's not already one
+        if isinstance(session_time, datetime.timedelta):
+            # Convert timedelta to a total number of seconds
+            seconds = session_time.total_seconds()
+            # Convert seconds to a time object
+            current_time = (datetime.datetime.min + session_time).time()
+        else:
+            current_time = session_time
+
         st.write(f"Current session date: {current_date}")
-        st.write(f"Current session time: {current_time.strftime('%I%p-%I%p')}")
+        st.write(f"Current session time: {current_time.strftime('%I:%M %p')}")
 
         # Allow the user to pick a new date
         new_date = st.date_input("Select the new date for your session", value=current_date, min_value=datetime.date.today())
 
-        # Query the database for the selected date's slots
-        mycursor.execute("SELECT SessionTime, IsBooked FROM Sessions WHERE SessionDate = %s AND SessionID <> %s", (new_date, session_id))
-        day_slots = mycursor.fetchall()
-        day_slots_dict = {slot.strftime("%H:%M:%S"): booked for slot, booked in day_slots}
+        # Query the database for the selected date's slots, excluding the current session
+        mycursor.execute(
+            "SELECT SessionTime FROM Sessions WHERE SessionDate = %s AND SessionID <> %s AND IsBooked = 1", 
+            (new_date, session_id)
+        )
+        # We only need the times of the booked slots to compare
+        booked_slots = [time.strftime("%H:%M:%S") for (time,) in mycursor.fetchall()]
 
         # Display all slots, marking those unavailable if already booked
         st.write("Please select a new time slot:")
+        current_datetime = datetime.datetime.now()
         for slot in AVAILABLE_SLOTS:
             slot_time = datetime.datetime.strptime(slot, "%H:%M:%S").time()
-            slot_str = slot_time.strftime("%I%p-%I%p")
-            if day_slots_dict.get(slot, 0):  # If the slot is booked
+            slot_datetime = datetime.datetime.combine(new_date, slot_time)
+            slot_str = slot_time.strftime("%I:%M %p")
+
+            # Check if the slot is in the future and not booked
+            if slot_datetime < current_datetime or slot in booked_slots:
                 st.write(f"{slot_str} - Not Available")
             else:
                 if st.button(f"Change to {slot_str}"):
@@ -142,6 +160,8 @@ def modify_session(mycursor, session_id, mydb):
                     break  # Exit after the change to prevent multiple changes
     else:
         st.error("Session details not found.")
+
+
         
 def cancel_session(mycursor, session_id, mydb):
 
