@@ -91,8 +91,10 @@ def create_session(mycursor, patient_id, mydb):
     # Step 3: Display all slots, marking those unavailable if already booked
     st.write("Please select a time slot:")
     for slot in AVAILABLE_SLOTS:
-        slot_time = datetime.datetime.strptime(slot, "%H:%M:%S").time()
-        slot_str = slot_time.strftime("%I%p-%I%p")
+        start_time = datetime.datetime.strptime(slot, "%H:%M:%S").time()
+        end_time = (datetime.datetime.strptime(slot, "%H:%M:%S") + datetime.timedelta(hours=1)).time()
+        slot_str = f"{start_time.strftime('%I%p')} - {end_time.strftime('%I%p')}"
+
         if day_slots_dict.get(slot, 0):  # If the slot is booked
             st.write(f"{slot_str} - Not Available")
         else:
@@ -102,7 +104,7 @@ def create_session(mycursor, patient_id, mydb):
                     st.error("Sorry, this slot is not available. Please choose a different one.")
                 else:
                     insert_query = "INSERT INTO Sessions (PatientID, SessionDate, SessionTime, IsBooked) VALUES (%s, %s, %s, %s)"
-                    mycursor.execute(insert_query, (patient_id, selected_date, slot_time, 1))
+                    mycursor.execute(insert_query, (patient_id, selected_date, start_time, 1))
                     mydb.commit()
                     st.success(f"Your session for {slot_str} has been booked successfully!")
                     break  # Exit the loop after booking to prevent multiple bookings
