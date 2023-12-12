@@ -32,6 +32,13 @@ def getpatientID(userID):
     mycursor.execute(sql, val)
     result = mycursor.fetchall()
     return result
+
+def getTherapistID(patient_id):
+    sql = "SELECT TherapistID FROM Matches WHERE PatientID = %s"
+    val = (patient_id,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchall()
+    return result
          
 def display_sessions(mycursor, mydb, patient_id):
     st.header("Your Booked Sessions")
@@ -68,7 +75,7 @@ def display_sessions(mycursor, mydb, patient_id):
         st.session_state['delete_id'] = None  # Reset the state
 
 
-def create_session(mycursor, patient_id, mydb):
+def create_session(mycursor, patient_id, mydb, therapist_id):
     st.subheader("Book a New Session")
 
     # Step 1: Let the patient pick a date from the calendar
@@ -104,8 +111,8 @@ def create_session(mycursor, patient_id, mydb):
                 if day_slots_dict.get(slot, 0):
                     st.error("Sorry, this slot is not available. Please choose a different one.")
                 else:
-                    insert_query = "INSERT INTO Sessions (PatientID, SessionDate, SessionTime, IsBooked) VALUES (%s, %s, %s, %s)"
-                    mycursor.execute(insert_query, (patient_id, selected_date, start_time, 1))
+                    insert_query = "INSERT INTO Sessions (PatientID, TherapistID, SessionDate, SessionTime, IsBooked) VALUES (%s, %s, %s, %s, %s)"
+                    mycursor.execute(insert_query, (patient_id, therapist_id, selected_date, start_time, 1))
                     mydb.commit()
                     st.success(f"Your session for {slot_str} has been booked successfully!")
                     break  # Exit the loop after booking to prevent multiple bookings
@@ -151,7 +158,6 @@ def modify_session(mycursor, session_id, mydb):
                 #break  # Exit after the change to prevent multiple changes
 
 
-        
 def cancel_session(mycursor, session_id, mydb):
 
     delete_query = "DELETE FROM Sessions WHERE SessionID = %s"
@@ -174,6 +180,10 @@ user_id = user_result[0][0]  # Extract UserID from the first (and only) tuple
 patient_result = getpatientID(user_id)
 patient_id = patient_result[0][0]
 #st.write(patient_id)
+
+therapist_result = getTherapistID(patient_id)
+t_id = therapist_result[0][0]
+#st.write(therapist_id)
         
 display_sessions(mycursor,mydb, patient_id)
-create_session(mycursor, patient_id, mydb)
+create_session(mycursor, patient_id, mydb, t_id)
