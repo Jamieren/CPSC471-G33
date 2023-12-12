@@ -23,7 +23,21 @@ def verify_login(username, password):
 
 # Streamlit UI for login
 def main():
-    st.title("Login")
+    hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+    hide_decoration_bar_style = '''
+            <style>
+            header {visibility: hidden;}
+            </style>
+            '''
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+    st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
+    st.title("🧩 MindMatch")
+    st.header("Login")
     username = st.text_input("Username", key="username")
     password = st.text_input("Password", type='password')
     if st.button('Login'):

@@ -41,7 +41,7 @@ def getTherapistID(patient_id):
     return result
          
 def display_sessions(mycursor, mydb, patient_id):
-    st.header("Your Booked Sessions")
+    st.header("Your Booked Sessions", divider="blue")
 
     # Query to retrieve booked sessions
     mycursor.execute("SELECT SessionID, SessionDate, SessionTime FROM Sessions WHERE PatientID = %s AND IsBooked = True ORDER BY SessionDate, SessionTime", (patient_id,))
@@ -165,6 +165,19 @@ def cancel_session(mycursor, session_id, mydb):
     mydb.commit()
     st.success("The session has been successfully deleted.")
 
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+hide_decoration_bar_style = '''
+            <style>
+            header {visibility: hidden;}
+            </style>
+            '''
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 
 # get logged in user's username
 st.session_state["username"] = st.session_state["username"]

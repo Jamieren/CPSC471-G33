@@ -48,6 +48,20 @@ def getTherapist(therapistID):
     result = mycursor.fetchall()
     return result
 
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+hide_decoration_bar_style = '''
+            <style>
+            header {visibility: hidden;}
+            </style>
+            '''
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
+
 # later make it so it says the appointment date in the header 
 st.header("Next Appointment Details", divider="blue")
 

@@ -54,6 +54,19 @@ def get_matched_therapist(patient_id):
     return result
 
 def display_dashboard():
+    hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+    hide_decoration_bar_style = '''
+            <style>
+            header {visibility: hidden;}
+            </style>
+            '''
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+    st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
     st.title("Patient Dashboard")
     st.session_state["username"] = st.session_state["username"]
     p_user = st.session_state["username"]
@@ -82,7 +95,7 @@ def display_dashboard():
     #st.text(f"Therapy Goals: {patient_info['therapy_goals']}")
     
     if therapist_details:
-        st.subheader("Your Matched Therapist")
+        st.subheader("Your Matched Therapist", divider="blue")
         st.text(f"Name: {therapist_details[2]}")
         st.text(f"Expertise: {therapist_details[3]}")
         st.text(f"Gender: {therapist_details[4]}")
