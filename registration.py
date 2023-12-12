@@ -133,10 +133,11 @@ def form():
         st.success("Patient account created successfully!", icon="😄")
         show_pages(
         [
-            Page("create_session.py","Create Session", "🗓️"),
-            Page("feedback.py", "Feedback","💌"),
-            Page("chat.py", "Chat With Your Therapist","💬"),
-            Page("dashboard.py", "Dashboard","💟"),
+            Page("start.py", "Login", "🏠"),
+            #Page("create_session.py","Create Session", "🗓️"),
+            #Page("feedback.py", "Feedback","💌"),
+            #Page("chat.py", "Chat With Your Therapist","💬"),
+            #Page("dashboard.py", "Dashboard","💟"),
             Page("registration.py", "Registration", "⭐"),
         ]
         )
