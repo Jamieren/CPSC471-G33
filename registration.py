@@ -34,6 +34,19 @@ def match_therapist(primary_concerns, preferred_gender, preferred_specialization
     
 
 def form():
+    hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+    hide_decoration_bar_style = '''
+            <style>
+            header {visibility: hidden;}
+            </style>
+            '''
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+    st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
     st.title('Patient Account Creation')
 
     # Personal Information
