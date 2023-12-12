@@ -33,7 +33,7 @@ def main():
                 [
                     #Page("start.py", "Login", "🏠"),
                     Page("dashboard.py", "Dashboard","💟"),
-                    Page("create_session.py","Create Session", "🗓️"),
+                    Page("create_session.py","Sessions", "🗓️"),
                     Page("feedback.py", "Feedback","💌"),
                     Page("chat.py", "Chat With Your Therapist","💬"),
                 ]
