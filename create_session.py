@@ -6,8 +6,8 @@ import datetime
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "Rzh5877030060!",
-    database = "TPMS"
+    password = "Fishies_2002",
+    database = "TPMS_471"
 )
 
 AVAILABLE_SLOTS = [
@@ -60,11 +60,12 @@ def display_sessions(mycursor, mydb, patient_id):
     # Handle modification and deletion outside of the loop
     if 'modify_id' in st.session_state and st.session_state['modify_id']:
         modify_session(mycursor, st.session_state['modify_id'], mydb)
-        st.session_state['modify_id'] = None  # Reset the state
+        #st.session_state['modify_id'] = None  # Reset the state
 
     if 'delete_id' in st.session_state and st.session_state['delete_id']:
         cancel_session(mycursor, st.session_state['delete_id'], mydb)
         st.session_state['delete_id'] = None  # Reset the state
+
 
 def create_session(mycursor, patient_id, mydb):
     st.subheader("Book a New Session")
@@ -142,7 +143,9 @@ def modify_session(mycursor, session_id, mydb):
                 mycursor.execute(update_query, (new_date, slot_time, session_id))
                 mydb.commit()
                 st.success(f"Your session has been changed to {new_date} at {slot_str}.")
-                break  # Exit after the change to prevent multiple changes
+                st.session_state['modify_id'] = None  # Reset the state
+                st.rerun()
+                #break  # Exit after the change to prevent multiple changes
 
 
         
