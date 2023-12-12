@@ -50,7 +50,7 @@ def form():
     st.title('Patient Account Creation')
 
     # Personal Information
-    st.header('Personal Information')
+    st.header('Personal Information', divider="blue")
     full_name = st.text_input('Username')
     email = st.text_input('Email Address')
     password = st.text_input('Password', type='password')
@@ -59,23 +59,23 @@ def form():
     dob = st.date_input('Date of Birth')
 
     # Contact Information
-    st.header('Contact Information')
+    st.header('Contact Information', divider="blue")
     phone_number = st.text_input('Phone Number')
     address = st.text_input('Address (Optional)')
 
     # Mental Health Information
-    st.header('Mental Health Information')
+    st.header('Mental Health Information', divider="blue")
     primary_concerns = st.selectbox('Primary Concerns', ['Anxiety', 'Depression', 'Stress', 'Relationship Issues', 'Others'])
     therapy_goals = st.text_area('Therapy Goals')
 
     # Therapy Preferences
-    st.header('Therapy Preferences')
+    st.header('Therapy Preferences', divider="blue")
     preferred_gender = st.selectbox('Preferred Gender of Therapist', ['Male', 'Female', 'No Preference'])
     preferred_specialization = st.selectbox('Preferred Specialization of Therapist', ['CBT', 'DBT', 'Psychoanalysis', 'Others'])
     preferred_mode = st.selectbox('Preferred Mode of Therapy', ['In-person', 'Online', 'Text-based'])
 
     # Additional Information
-    st.header('Additional Information')
+    st.header('Additional Information', divider="blue")
     language_preferences = st.text_input('Any specific language or cultural preferences? (Optional)')
     other_requirements = st.text_area('Any other preferences or requirements? (Optional)')
 
