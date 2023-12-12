@@ -38,7 +38,7 @@ def form():
 
     # Personal Information
     st.header('Personal Information')
-    full_name = st.text_input('Full Name')
+    full_name = st.text_input('Username')
     email = st.text_input('Email Address')
     password = st.text_input('Password', type='password')
     age = st.number_input('Age', min_value=1, max_value=100)
