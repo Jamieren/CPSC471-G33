@@ -143,6 +143,7 @@ def form():
         # hide_pages(["Login"])
 
 def main():
+    st.session_state["username"] = st.session_state["username"]
     form()
 
 if __name__ == "__main__":
