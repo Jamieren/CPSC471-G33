@@ -23,7 +23,7 @@ def verify_login(username, password):
 
 # Streamlit UI for login
 def main():
-    st.title("Login Page")
+    st.title("Login")
     username = st.text_input("Username", key="username")
     password = st.text_input("Password", type='password')
     if st.button('Login'):
