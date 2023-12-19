@@ -142,15 +142,16 @@ def modify_session(mycursor, session_id, mydb):
     # Display all slots, marking those unavailable if already booked
     st.write("Please select a new time slot:")
     for slot in AVAILABLE_SLOTS:
-        slot_time = datetime.datetime.strptime(slot, "%H:%M:%S").time()
-        slot_str = slot_time.strftime("%I%p-%I%p")
+        start_time = datetime.datetime.strptime(slot, "%H:%M:%S").time()
+        end_time = (datetime.datetime.strptime(slot, "%H:%M:%S") + datetime.timedelta(hours=1)).time()
+        slot_str = f"{start_time.strftime('%I%p')} - {end_time.strftime('%I%p')}"
         if day_slots_dict.get(slot, 0):  # If the slot is booked
             st.write(f"{slot_str} - Not Available")
         else:
             if st.button(f"Change to {slot_str}"):
                 # Update the session with the new date and time
                 update_query = "UPDATE Sessions SET SessionDate = %s, SessionTime = %s WHERE SessionID = %s"
-                mycursor.execute(update_query, (new_date, slot_time, session_id))
+                mycursor.execute(update_query, (new_date, start_time, session_id))
                 mydb.commit()
                 st.success(f"Your session has been changed to {new_date} at {slot_str}.")
                 st.session_state['modify_id'] = None  # Reset the state
