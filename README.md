@@ -12,6 +12,7 @@ The Therapist-Patient Matching System is a web application designed to facilitat
 ## Technologies Used
 - Frontend: Streamlit
 - Backend: Python
+- DBMS: MySQL
   
 ## Installation and Setup
 1. Clone the repository:
