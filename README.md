@@ -1,7 +1,7 @@
 # CPSC471-G33
 # Therapist-Patient Matching System
 ## Introduction
-The Therapist-Patient Matching System is a web application designed to facilitate efficient and personalized matches between patients seeking mental health services and therapists. Leveraging advanced matching algorithms, the system aims to enhance the efficacy of mental health care by considering patient preferences, therapist specialties, and availability.
+The MindMatch Therapist-Patient Matching System is a web application designed to facilitate efficient and personalized matches between patients seeking mental health services and therapists. Leveraging advanced matching algorithms, the system aims to enhance the efficacy of mental health care by considering patient preferences, therapist specialties, and availability.
 
 ## Features
 - Automated Matching: Matches patients with therapists based on psychological profiles and preferences.
